@@ -2,3 +2,4 @@
 #include <doctest.h>
 
 #include "vlite/builder.hpp"
+#include "vlite/ref_vector.hpp"
