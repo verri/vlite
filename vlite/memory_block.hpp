@@ -33,7 +33,7 @@ public:
 
 private:
   T* data_ = nullptr;
-  std::size_t size_ = 0ul;
+  std::size_t size_ = 0u;
 };
 } // namespace vlite
 

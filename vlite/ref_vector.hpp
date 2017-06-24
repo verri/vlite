@@ -4,8 +4,8 @@
 #include <vlite/common_vector_base.hpp>
 #include <vlite/memory_block.hpp>
 
-#include <utility>
 #include <stdexcept>
+#include <utility>
 
 namespace vlite
 {
@@ -118,22 +118,26 @@ public:
 
   // decltype(auto) operator[](bounded_slice slice)
   // {
-  //   return detail::vector_at(data(), descriptor_, eval(slice, descriptor_.extents[0u]));
+  //   return detail::vector_at(data(), descriptor_, eval(slice,
+  //   descriptor_.extents[0u]));
   // }
 
   // decltype(auto) operator[](bounded_slice slice) const
   // {
-  //   return detail::vector_at(data(), descriptor_, eval(slice, descriptor_.extents[0u]));
+  //   return detail::vector_at(data(), descriptor_, eval(slice,
+  //   descriptor_.extents[0u]));
   // }
 
   // decltype(auto) operator[](bounded_strided_slice slice)
   // {
-  //   return detail::vector_at(data(), descriptor_, eval(slice, descriptor_.extents[0u]));
+  //   return detail::vector_at(data(), descriptor_, eval(slice,
+  //   descriptor_.extents[0u]));
   // }
 
   // decltype(auto) operator[](bounded_strided_slice slice) const
   // {
-  //   return detail::vector_at(data(), descriptor_, eval(slice, descriptor_.extents[0u]));
+  //   return detail::vector_at(data(), descriptor_, eval(slice,
+  //   descriptor_.extents[0u]));
   // }
 
   // template <typename Rng, typename = meta::requires<range::SizedRange<Rng>>>
