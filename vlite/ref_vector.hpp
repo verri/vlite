@@ -3,6 +3,7 @@
 
 #include <vlite/common_vector_base.hpp>
 #include <vlite/memory_block.hpp>
+#include <vlite/strided_ref_vector.hpp>
 
 #include <stdexcept>
 #include <utility>
@@ -32,10 +33,10 @@ public:
 
   ~ref_vector(){};
 
-  template <typename Array>
-  auto operator=(const common_vector_base<Array>& source) -> ref_vector&
+  template <typename Vector>
+  auto operator=(const common_vector_base<Vector>& source) -> ref_vector&
   {
-    static_assert(std::is_assignable_v<value_type&, const typename Array::value_type&>,
+    static_assert(std::is_assignable_v<value_type&, const typename Vector::value_type&>,
                   "incompatible assignment");
 
     if (source.size() != block_.size())
@@ -45,7 +46,7 @@ public:
     return *this;
   }
 
-  template <typename U, typename = meta::fallback<CommonArray<U>>>
+  template <typename U, typename = meta::fallback<CommonVector<U>>>
   auto operator=(const U& source) -> ref_vector&
   {
     static_assert(std::is_assignable<value_type&, U>::value, "incompatible assignment");
@@ -66,25 +67,13 @@ public:
 
   operator ref_vector<const value_type>() const { return {{data(), size()}}; }
 
-  // operator strided_ref_vector<value_type, identity_mapper<order>>()
-  // {
-  //   return {data(), {{0u, dimensions()}}};
-  // }
+  operator strided_ref_vector<value_type>() { return {data(), size(), 1u}; }
 
-  // operator strided_ref_vector<const value_type, identity_mapper<order>>() const
-  // {
-  //   return {data(), {{0u, dimensions()}}};
-  // }
+  operator strided_ref_vector<const value_type>() const { return {data(), size(), 1u}; }
 
-  // decltype(auto) operator[](size_type i)
-  // {
-  //   return detail::vector_at(data(), descriptor_, i);
-  // }
+  auto operator[](size_type i) -> value_type& { return data()[i]; }
 
-  // decltype(auto) operator[](size_type i) const
-  // {
-  //   return detail::vector_at(data(), descriptor_, i);
-  // }
+  auto operator[](size_type i) const -> const value_type& { return data()[i]; }
 
   // decltype(auto) operator[](absolute_slice slice)
   // {

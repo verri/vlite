@@ -35,12 +35,12 @@ private:
   constexpr auto self() noexcept -> Derived& { return static_cast<Derived&>(*this); }
 };
 
-template <typename T, typename = void> struct CommonArray : std::false_type
+template <typename T, typename = void> struct CommonVector : std::false_type
 {
 };
 
 template <typename T>
-struct CommonArray<T, meta::requires<std::is_base_of<common_vector_base<T>, T>>>
+struct CommonVector<T, meta::requires<std::is_base_of<common_vector_base<T>, T>>>
   : std::true_type
 {
 };

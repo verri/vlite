@@ -1,9 +1,4 @@
-SUFFIXES += .d
-
 HEADERS := $(shell find vlite -name \*.hpp)
-SRC := test_suite.cpp
-OBJ := $(SRC:.cpp=.o)
-DEP := $(SRC:.cpp=.d)
 
 CXX = g++
 CXXFLAGS = -std=c++1z -Wall -Wextra -pedantic -O2 -isystem third_party -isystem.
@@ -17,14 +12,11 @@ endif
 test: test_suite
 	valgrind ./test_suite
 
-test_suite: $(OBJ)
-	$(CXX) $(CXXFLAGS) -o $@ $(OBJ) $(LDFLAGS)
+test_suite: test_suite.o
+	$(CXX) $(CXXFLAGS) -o $@ $< $(LDFLAGS)
 
-%.o: %.cpp
+test_suite.o: test_suite.cpp $(HEADERS)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-%.d: %.cpp
-	$(CXX) $(CXXFLAGS) -MM -MT '$(patsubst %.cpp,%.o,$<)' $< -MF $@
 
 format:
 	clang-format -i -style=file $(SRC) $(HEADERS)
