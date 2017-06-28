@@ -1,5 +1,5 @@
-#ifndef VLITE_COMMON_VECTOR_HPP_INCLUDED
-#define VLITE_COMMON_VECTOR_HPP_INCLUDED
+#ifndef VLITE_COMMON_VECTOR_BASE_HPP_INCLUDED
+#define VLITE_COMMON_VECTOR_BASE_HPP_INCLUDED
 
 #include <vlite/meta.hpp>
 
@@ -47,4 +47,4 @@ struct CommonVector<T, meta::requires<std::is_base_of<common_vector_base<T>, T>>
 
 } // namespace vlite
 
-#endif // VLITE_COMMON_VECTOR_HPP_INCLUDED
+#endif // VLITE_COMMON_VECTOR_BASE_HPP_INCLUDED
