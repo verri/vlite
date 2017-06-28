@@ -2,8 +2,9 @@
 #define VLITE_VECTOR_VECTOR_HPP_INCLUDED
 
 #include <vlite/allocator.hpp>
+#include <vlite/builder.hpp>
 #include <vlite/functional.hpp>
-// #include <vlite/numeric.hpp>
+#include <vlite/numeric.hpp>
 #include <vlite/ref_vector.hpp>
 
 namespace vlite
@@ -55,6 +56,11 @@ public:
   {
     static_assert(std::is_pod_v<value_type>,
                   "Uninitialized vector is only allowed for POD types");
+  }
+
+  explicit vector(builder<value_type> b)
+    : ref_vector<value_type>{b.release()}
+  {
   }
 
   ~vector()
