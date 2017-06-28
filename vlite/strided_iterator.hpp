@@ -84,6 +84,11 @@ public:
     return copy;
   }
 
+  constexpr auto operator[](difference_type n) const noexcept -> value_type&
+  {
+    return *(*this + n);
+  }
+
 private:
   T* data_ = nullptr;
   std::size_t stride_ = 0u;

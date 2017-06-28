@@ -2,7 +2,7 @@
 #define VLITE_VECTOR_VECTOR_HPP_INCLUDED
 
 #include <vlite/allocator.hpp>
-// #include <vlite/functional.hpp>
+#include <vlite/functional.hpp>
 // #include <vlite/numeric.hpp>
 #include <vlite/ref_vector.hpp>
 
