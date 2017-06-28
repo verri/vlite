@@ -2,6 +2,7 @@
 #define VLITE_STRIDED_REF_VECTOR_HPP_INCLUDED
 
 #include <vlite/common_vector_base.hpp>
+#include <vlite/slice.hpp>
 #include <vlite/strided_iterator.hpp>
 
 namespace vlite
@@ -74,71 +75,52 @@ public:
 
   auto operator[](size_type i) const -> const value_type& { return data()[i * stride()]; }
 
-  // decltype(auto) operator[](absolute_slice slice)
-  // {
-  //   return detail::vector_at(data(), mapper(), std::move(slice));
-  // }
+  auto operator[](all_index) -> strided_ref_vector<value_type> { return *this; }
 
-  // decltype(auto) operator[](absolute_slice slice) const
-  // {
-  //   return detail::vector_at(data(), mapper(), std::move(slice));
-  // }
+  auto operator[](all_index) const -> strided_ref_vector<const value_type>
+  {
+    return *this;
+  }
 
-  // decltype(auto) operator[](absolute_strided_slice slice)
-  // {
-  //   return detail::vector_at(data(), mapper(), std::move(slice));
-  // }
+  auto operator[](slice s) -> strided_ref_vector<value_type>
+  {
+    return {data() + s.start * stride_, s.size, stride_};
+  }
 
-  // decltype(auto) operator[](absolute_strided_slice slice) const
-  // {
-  //   return detail::vector_at(data(), mapper(), std::move(slice));
-  // }
+  auto operator[](slice s) const -> strided_ref_vector<const value_type>
+  {
+    return {data() + s.start * stride_, s.size, stride_};
+  }
 
-  // decltype(auto) operator[](every_index index)
-  // {
-  //   return detail::vector_at(data(), mapper(), index);
-  // }
+  auto operator[](strided_slice s) -> strided_ref_vector<value_type>
+  {
+    return {data() + s.start * stride_, s.size, s.stride * stride_};
+  }
 
-  // decltype(auto) operator[](every_index index) const
-  // {
-  //   return detail::vector_at(data(), mapper(), index);
-  // }
+  auto operator[](strided_slice s) const -> strided_ref_vector<const value_type>
+  {
+    return {data() + s.start * stride_, s.size, s.stride * stride_};
+  }
 
-  // decltype(auto) operator[](bounded_slice slice)
-  // {
-  //   return detail::vector_at(data(), mapper(),
-  //                           eval(slice, this->descriptor().extents[0u]));
-  // }
+  auto operator[](bounded_slice s) -> strided_ref_vector<value_type>
+  {
+    return {data() + s.start * stride_, s.size(size()), stride_};
+  }
 
-  // decltype(auto) operator[](bounded_slice slice) const
-  // {
-  //   return detail::vector_at(data(), mapper(),
-  //                           eval(slice, this->descriptor().extents[0u]));
-  // }
+  auto operator[](bounded_slice s) const -> strided_ref_vector<const value_type>
+  {
+    return {data() + s.start * stride_, s.size(size()), stride_};
+  }
 
-  // decltype(auto) operator[](bounded_strided_slice slice)
-  // {
-  //   return detail::vector_at(data(), mapper(),
-  //                           eval(slice, this->descriptor().extents[0u]));
-  // }
+  auto operator[](strided_bounded_slice s) -> strided_ref_vector<value_type>
+  {
+    return {data() + s.start * stride_, s.size(size()), s.stride * stride_};
+  }
 
-  // decltype(auto) operator[](bounded_strided_slice slice) const
-  // {
-  //   return detail::vector_at(data(), mapper(),
-  //                           eval(slice, this->descriptor().extents[0u]));
-  // }
-
-  // template <typename Rng, typename = meta::requires<range::SizedRange<Rng>>>
-  // decltype(auto) operator[](const Rng& rng)
-  // {
-  //   return detail::vector_at(data(), mapper(), rng);
-  // }
-
-  // template <typename Rng, typename = meta::requires<range::SizedRange<Rng>>>
-  // decltype(auto) operator[](const Rng& rng) const
-  // {
-  //   return detail::vector_at(data(), mapper(), rng);
-  // }
+  auto operator[](strided_bounded_slice s) const -> strided_ref_vector<const value_type>
+  {
+    return {data() + s.start * stride_, s.size(size()), s.stride * stride_};
+  }
 
   auto begin() noexcept -> iterator { return {data(), stride()}; }
   auto end() noexcept -> iterator { return {data() + stride() * size(), stride()}; }
