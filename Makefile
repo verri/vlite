@@ -5,11 +5,10 @@ CXXFLAGS = -std=c++1z -Wall -Wextra -pedantic -O2 -isystem third_party -isystem.
 
 all: test
 
-ifeq (0, $(words $(findstring $(MAKECMDGOALS), $(NODEPS))))
--include $(DEP)
-endif
-
 test: test_suite
+	./test_suite
+
+memory_test: test_suite
 	valgrind ./test_suite
 
 test_suite: test_suite.o
@@ -27,4 +26,4 @@ tidy:
 clean:
 	find . -name '*.[od]' -exec rm {} \;
 
-.PHONY: format test clean tidy
+.PHONY: format test clean tidy memory_test
