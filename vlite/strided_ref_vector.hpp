@@ -11,7 +11,7 @@ namespace vlite
 template <typename T>
 class strided_ref_vector : public common_vector_base<strided_ref_vector<T>>
 {
-  template <typename, typename> friend class strided_ref_vector;
+  template <typename> friend class strided_ref_vector;
 
 public:
   using value_type = T;
@@ -75,9 +75,9 @@ public:
 
   auto operator[](size_type i) const -> const value_type& { return data()[i * stride()]; }
 
-  auto operator[](all_index) -> strided_ref_vector<value_type> { return *this; }
+  auto operator[](every_index) -> strided_ref_vector<value_type> { return *this; }
 
-  auto operator[](all_index) const -> strided_ref_vector<const value_type>
+  auto operator[](every_index) const -> strided_ref_vector<const value_type>
   {
     return *this;
   }

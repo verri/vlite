@@ -7,11 +7,9 @@
 namespace vlite
 {
 
-template <typename Op, std::size_t N> class expr_vector
+template <typename Op> class expr_vector
 {
 public:
-  static constexpr auto order = N;
-
   using size_type = std::size_t;
 
   using difference_type = std::ptrdiff_t;

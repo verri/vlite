@@ -42,11 +42,11 @@ struct slice
   std::size_t size;
 };
 
-struct all_index
+struct every_index
 {
 };
 
-static constexpr auto all = all_index{};
+static constexpr auto every = every_index{};
 
 class bounded_index
 {
@@ -58,7 +58,7 @@ public:
     return std::min(maximum_, size);
   }
 
-  constexpr bounded_index(all_index) noexcept
+  constexpr bounded_index(every_index) noexcept
     : maximum_{std::numeric_limits<std::size_t>::max()}
   {
   }

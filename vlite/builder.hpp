@@ -94,7 +94,7 @@ private:
 
 #ifdef DOCTEST_LIBRARY_INCLUDED
 
-TEST_CASE("[builder] Building an array in parts")
+TEST_CASE("[builder] Building an vector in parts")
 {
   auto a = vlite::builder<double>(10u);
   CHECK_THROWS(a.release());

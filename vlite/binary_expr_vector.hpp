@@ -9,26 +9,23 @@
 namespace vlite
 {
 
-template <typename LhsIt, typename RhsIt, typename Op, std::size_t N>
-class binary_expr_vector
-  : public expr_vector<Op, N>,
-    public common_vector_base<binary_expr_vector<LhsIt, RhsIt, Op, N>>
+template <typename LhsIt, typename RhsIt, typename Op>
+class binary_expr_vector : public expr_vector<Op>,
+                           public common_vector_base<binary_expr_vector<LhsIt, RhsIt, Op>>
 {
   using lhs_result = decltype(*std::declval<LhsIt>());
   using rhs_result = decltype(*std::declval<RhsIt>());
 
 public:
-  using expr_vector<Op, N>::order;
-
   using value_type = std::decay_t<std::result_of_t<Op(lhs_result, rhs_result)>>;
 
-  using typename expr_vector<Op, N>::size_type;
+  using typename expr_vector<Op>::size_type;
 
-  using typename expr_vector<Op, N>::difference_type;
+  using typename expr_vector<Op>::difference_type;
 
   class iterator
   {
-    friend class binary_expr_vector<LhsIt, RhsIt, Op, N>;
+    friend class binary_expr_vector<LhsIt, RhsIt, Op>;
 
   public:
     using iterator_category = std::input_iterator_tag;
@@ -89,7 +86,7 @@ public:
 public:
   binary_expr_vector(LhsIt lhs_first, LhsIt lhs_last, RhsIt rhs_first, RhsIt rhs_last,
                      const Op& op, std::size_t size)
-    : expr_vector<Op, N>(std::move(op), size)
+    : expr_vector<Op>(std::move(op), size)
     , lhs_first_{lhs_first}
     , lhs_last_{lhs_last}
     , rhs_first_{rhs_first}
@@ -109,16 +106,16 @@ public:
   auto cbegin() const -> const_iterator { return {lhs_first_, rhs_first_, this}; }
   auto cend() const -> const_iterator { return {lhs_last_, rhs_last_, this}; }
 
-  using expr_vector<Op, N>::size;
+  using expr_vector<Op>::size;
 
 private:
   LhsIt lhs_first_, lhs_last_;
   RhsIt rhs_first_, rhs_last_;
 };
 
-template <typename LhsIt, typename RhsIt, typename Op, std::size_t N>
+template <typename LhsIt, typename RhsIt, typename Op>
 binary_expr_vector(LhsIt, LhsIt, RhsIt, RhsIt, Op, std::size_t)
-  ->binary_expr_vector<LhsIt, RhsIt, Op, N>;
+  ->binary_expr_vector<LhsIt, RhsIt, Op>;
 
 } // namespace vlite
 

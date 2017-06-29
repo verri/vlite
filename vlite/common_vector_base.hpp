@@ -35,13 +35,24 @@ private:
   constexpr auto self() noexcept -> Derived& { return static_cast<Derived&>(*this); }
 };
 
+namespace detail
+{
+template <typename T> using size_getter = decltype(std::declval<T>().size());
+template <typename T> using begin_getter = decltype(std::declval<T>().begin());
+template <typename T> using end_getter = decltype(std::declval<T>().end());
+}
+
 template <typename T, typename = void> struct CommonVector : std::false_type
 {
 };
 
 template <typename T>
-struct CommonVector<T, meta::requires<std::is_base_of<common_vector_base<T>, T>>>
-  : std::true_type
+struct CommonVector<                            //
+  T, meta::requires<                            //
+       meta::compiles<T, detail::size_getter>,  //
+       meta::compiles<T, detail::begin_getter>, //
+       meta::compiles<T, detail::end_getter>    //
+       >> : std::true_type
 {
 };
 

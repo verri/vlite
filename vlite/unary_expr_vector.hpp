@@ -9,24 +9,22 @@
 namespace vlite
 {
 
-template <typename It, typename Op, std::size_t N>
-class unary_expr_vector : public expr_vector<Op, N>,
-                          public common_vector_base<unary_expr_vector<It, Op, N>>
+template <typename It, typename Op>
+class unary_expr_vector : public expr_vector<Op>,
+                          public common_vector_base<unary_expr_vector<It, Op>>
 {
   using iterator_result = decltype(*std::declval<It>());
 
 public:
-  using expr_vector<Op, N>::order;
-
   using value_type = std::decay_t<std::result_of_t<Op(iterator_result)>>;
 
-  using typename expr_vector<Op, N>::size_type;
+  using typename expr_vector<Op>::size_type;
 
-  using typename expr_vector<Op, N>::difference_type;
+  using typename expr_vector<Op>::difference_type;
 
   class iterator
   {
-    friend class unary_expr_vector<It, Op, N>;
+    friend class unary_expr_vector<It, Op>;
 
   public:
     using iterator_category = std::input_iterator_tag;
@@ -78,7 +76,7 @@ public:
 
 public:
   unary_expr_vector(It it_first, It it_last, Op op, std::size_t size)
-    : expr_vector<Op, order>(std::move(op), size)
+    : expr_vector<Op>(std::move(op), size)
     , it_first_{it_first}
     , it_last_{it_last}
   {
@@ -96,11 +94,7 @@ public:
   auto cbegin() const -> iterator { return {it_first_, this}; }
   auto cend() const -> iterator { return {it_last_, this}; }
 
-  using expr_vector<Op, order>::size;
-  using expr_vector<Op, order>::dimensions;
-  using expr_vector<Op, order>::length;
-  using expr_vector<Op, order>::row_count;
-  using expr_vector<Op, order>::column_count;
+  using expr_vector<Op>::size;
 
   /// \exclude
   auto first() const { return it_first_; }
@@ -109,8 +103,8 @@ private:
   It it_first_, it_last_;
 };
 
-template <typename It, typename Op, std::size_t N>
-unary_expr_vector(It, It, Op, std::size_t)->unary_expr_vector<It, Op, N>;
+template <typename It, typename Op>
+unary_expr_vector(It, It, Op, std::size_t)->unary_expr_vector<It, Op>;
 
 } // namespace vlite
 

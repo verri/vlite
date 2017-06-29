@@ -76,18 +76,18 @@ public:
 
   auto operator[](size_type i) const -> const value_type& { return data()[i]; }
 
-  auto operator[](all_index) -> ref_vector<value_type> { return *this; }
+  auto operator[](every_index) -> ref_vector<value_type> { return *this; }
 
-  auto operator[](all_index) const -> ref_vector<const value_type> { return *this; }
+  auto operator[](every_index) const -> ref_vector<const value_type> { return *this; }
 
   auto operator[](slice s) -> ref_vector<value_type>
   {
-    return {data() + s.start, s.size};
+    return {{data() + s.start, s.size}};
   }
 
   auto operator[](slice s) const -> ref_vector<const value_type>
   {
-    return {data() + s.start, s.size};
+    return {{data() + s.start, s.size}};
   }
 
   auto operator[](strided_slice s) -> strided_ref_vector<value_type>
@@ -102,12 +102,12 @@ public:
 
   auto operator[](bounded_slice s) -> ref_vector<value_type>
   {
-    return {data() + s.start, s.size(size())};
+    return {{data() + s.start, s.size(size())}};
   }
 
   auto operator[](bounded_slice s) const -> ref_vector<const value_type>
   {
-    return {data() + s.start, s.size(size())};
+    return {{data() + s.start, s.size(size())}};
   }
 
   auto operator[](strided_bounded_slice s) -> strided_ref_vector<value_type>

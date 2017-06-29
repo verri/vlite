@@ -1,5 +1,5 @@
-#ifndef JULES_ARRAY_FUNCTIONAL_H
-#define JULES_ARRAY_FUNCTIONAL_H
+#ifndef JULES_VECTOR_FUNCTIONAL_H
+#define JULES_VECTOR_FUNCTIONAL_H
 
 #include <vlite/binary_expr_vector.hpp>
 #include <vlite/unary_expr_vector.hpp>
@@ -12,8 +12,7 @@ namespace vlite
 template <typename Vector, typename Op>
 static auto apply(const common_vector_base<Vector>& operand, Op op)
 {
-  return unary_expr_vector(operand.begin(), operand.end(), std::move(op),
-                           operand.dimensions());
+  return unary_expr_vector(operand.begin(), operand.end(), std::move(op), operand.size());
 }
 
 template <typename VectorA, typename VectorB, typename Op>
@@ -21,7 +20,7 @@ static auto apply(const common_vector_base<VectorA>& lhs,
                   const common_vector_base<VectorB>& rhs, Op op)
 {
   return binary_expr_vector(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), std::move(op),
-                            lhs.dimensions());
+                            lhs.size());
 }
 
 #define OPERATIONS_LIST                                                                  \
@@ -100,4 +99,4 @@ OPERATIONS_LIST
 
 } // namespace vlite
 
-#endif // JULES_ARRAY_FUNCTIONAL_H
+#endif // JULES_VECTOR_FUNCTIONAL_H

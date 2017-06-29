@@ -60,6 +60,30 @@ template <typename... Args> auto cat(Args&&... args)
   return vector<R>(std::move(b));
 }
 
+template <typename Vector> auto all(const common_vector_base<Vector>& vec)
+{
+  for (const auto& value : vec)
+    if (!value)
+      return false;
+  return true;
+}
+
+template <typename Vector> auto any(const common_vector_base<Vector>& vec)
+{
+  for (const auto& value : vec)
+    if (value)
+      return true;
+  return false;
+}
+
+template <typename Vector> auto none(const common_vector_base<Vector>& vec)
+{
+  for (const auto& value : vec)
+    if (value)
+      return false;
+  return true;
+}
+
 } // namespace vlite
 
 #endif // VLITE_NUMERIC_HPP_INCLUDED

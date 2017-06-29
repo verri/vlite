@@ -6,6 +6,7 @@
 #include <vlite/functional.hpp>
 #include <vlite/numeric.hpp>
 #include <vlite/ref_vector.hpp>
+#include <vlite/ref_vector_concept.hpp>
 
 namespace vlite
 {
@@ -41,6 +42,14 @@ public:
     : ref_vector<value_type>{this->allocate(values.size())}
   {
     this->construct(this->block_, values.begin());
+  }
+
+  template <typename Vector>
+  vector(const common_vector_base<Vector>& other)
+    : ref_vector<value_type>{this->allocate(other.size())}
+  {
+    static_assert(std::is_constructible_v<T, const typename Vector::value_type&>);
+    this->construct(this->block_, other.begin());
   }
 
   template <typename It, typename R = typename std::iterator_traits<It>::reference>
@@ -98,20 +107,144 @@ public:
     return *this;
   }
 
-  auto size() const noexcept -> std::size_t { return this->block_.size(); }
-
   auto data() noexcept -> value_type* { return this->block_.data(); }
 
   auto data() const noexcept -> const value_type* { return this->block_.data(); }
+
+  using ref_vector<T>::size;
+  using ref_vector<T>::begin;
+  using ref_vector<T>::end;
+  using ref_vector<T>::cbegin;
+  using ref_vector<T>::cend;
 };
 
 #if !defined(__clang__)
 // clang-format off
-template <class T> vector(const T&, std::size_t) -> vector<T>;
-template <class T> vector(std::initializer_list<T>) -> vector<T>;
+template <typename T> vector(const T&, std::size_t) -> vector<T>;
+template <typename T> vector(std::initializer_list<T>) -> vector<T>;
+template <typename Vector> vector(common_vector_base<Vector>) -> vector<std::decay_t<typename Vector::value_type>>;
 // clang-format on
 #endif // __clang__
 
+template <typename Vector, typename = meta::requires<RefVector<Vector>>>
+constexpr auto ref(Vector vec)
+{
+  return vec;
+}
+
+template <typename T> constexpr auto ref(vector<T>& vec) { return vec[every]; }
+
+template <typename T> constexpr auto ref(const vector<T>& vec) { return vec[every]; }
+
 } // namespace vlite
+
+#ifdef DOCTEST_LIBRARY_INCLUDED
+
+#include <complex>
+#include <algorithm>
+
+using test_types =
+  doctest::Types<char, short, int, long, double, float, std::complex<float>>;
+
+TEST_CASE_TEMPLATE("[vector] Value-initialized vector", T, test_types)
+{
+  auto vector = vlite::vector<T>(10u);
+
+  CHECK(vector.size() == 10u);
+  CHECK(std::find_if_not(vector.begin(), vector.end(),
+                         [](const auto& x) { return x == T{}; }) == vector.end());
+}
+
+template <typename Vector>
+auto is_ref_vector(Vector) -> vlite::meta::requires_t<bool, vlite::RefVector<Vector>>
+{
+  return true;
+}
+
+template <typename U>
+auto is_ref_vector(U) -> vlite::meta::fallback_t<bool, vlite::RefVector<U>>
+{
+  return false;
+}
+
+TEST_CASE("[vector] Check if is a reference to vector")
+{
+  using namespace vlite;
+
+  const auto a = vector{1, 2, 3};
+  auto b = vector{1.0, 2.0, 3.0};
+
+  CHECK(a.size() == 3u);
+  CHECK(b.size() == 3u);
+
+  CHECK_FALSE(is_ref_vector(a));
+  CHECK_FALSE(is_ref_vector(b));
+
+  static_assert(CommonVector<vector<int>>::value);
+  static_assert(CommonVector<ref_vector<int>>::value);
+
+  CHECK(is_ref_vector(ref(a)));
+  CHECK(is_ref_vector(a[every]));
+  CHECK(is_ref_vector(a[{0, 2}]));
+  CHECK(is_ref_vector(a[{0, 2, 1}]));
+  CHECK(is_ref_vector(a[{0, at_most(100u), 1}]));
+  CHECK(is_ref_vector(a[{0, every}]));
+  CHECK(is_ref_vector(a[{0, every, 1u}]));
+
+  CHECK(is_ref_vector(ref(b)));
+  CHECK(is_ref_vector(b[every]));
+  CHECK(is_ref_vector(b[{0, 2}]));
+  CHECK(is_ref_vector(b[{0, 2, 1}]));
+  CHECK(is_ref_vector(b[{0, at_most(100u), 1}]));
+  CHECK(is_ref_vector(b[{0, every}]));
+  CHECK(is_ref_vector(b[{0, every, 1u}]));
+}
+
+TEST_CASE("[vector] Assignment")
+{
+  using namespace vlite;
+
+  auto a = vector<int>(10u);
+  a[every] = 1;
+
+  CHECK(a.size() == 10u);
+  CHECK(std::find_if_not(a.begin(), a.end(), [](const auto& x) { return x == 1; }) ==
+        a.end());
+}
+
+template <typename Vector, typename = vlite::meta::requires<vlite::RefVector<Vector>>>
+auto fill_with_default(Vector vec)
+{
+  vec = typename Vector::value_type{};
+}
+
+TEST_CASE("[vector] Fill")
+{
+  auto a = vlite::vector{1, 2, 3};
+  fill_with_default(ref(a));
+
+  CHECK(a.size() == 3u);
+  CHECK(std::find_if_not(a.begin(), a.end(), [](const auto& x) { return x == 0; }) ==
+        a.end());
+}
+
+TEST_CASE("[vector] Operations")
+{
+  using namespace vlite;
+
+  auto a = vector<int>(3u);
+
+  CHECK(all(a == 0));
+  CHECK(all(a + 1 == 1));
+
+  a[0] = 1;
+  a[{1, every}] = 2;
+
+  CHECK(all(-a == vector{-1, -2, -2}));
+  CHECK(none(0 == a));
+  CHECK(any(a == 1));
+}
+
+#endif // DOCTEST_LIBRARY_INCLUDED
 
 #endif // VLITE_VECTOR_VECTOR_HPP_INCLUDED
