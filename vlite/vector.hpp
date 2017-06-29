@@ -118,13 +118,10 @@ public:
   using ref_vector<T>::cend;
 };
 
-#if !defined(__clang__)
-// clang-format off
-template <typename T> vector(const T&, std::size_t) -> vector<T>;
-template <typename T> vector(std::initializer_list<T>) -> vector<T>;
-template <typename Vector> vector(common_vector_base<Vector>) -> vector<std::decay_t<typename Vector::value_type>>;
-// clang-format on
-#endif // __clang__
+template <typename T> vector(const T&, std::size_t)->vector<T>;
+template <typename T> vector(std::initializer_list<T>)->vector<T>;
+template <typename Vector>
+vector(common_vector_base<Vector>)->vector<std::decay_t<typename Vector::value_type>>;
 
 template <typename Vector, typename = meta::requires<RefVector<Vector>>>
 constexpr auto ref(Vector vec)
@@ -140,8 +137,8 @@ template <typename T> constexpr auto ref(const vector<T>& vec) { return vec[ever
 
 #ifdef DOCTEST_LIBRARY_INCLUDED
 
-#include <complex>
 #include <algorithm>
+#include <complex>
 
 using test_types =
   doctest::Types<char, short, int, long, double, float, std::complex<float>>;

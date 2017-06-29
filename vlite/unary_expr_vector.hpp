@@ -96,9 +96,6 @@ public:
 
   using expr_vector<Op>::size;
 
-  /// \exclude
-  auto first() const { return it_first_; }
-
 private:
   It it_first_, it_last_;
 };
