@@ -32,7 +32,7 @@ public:
   {
   }
 
-  ~ref_vector() {}
+  ~ref_vector() = default;
 
   template <typename Vector>
   auto operator=(const common_vector_base<Vector>& source) -> ref_vector&

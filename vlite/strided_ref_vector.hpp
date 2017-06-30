@@ -31,7 +31,7 @@ public:
   {
   }
 
-  ~strided_ref_vector() {} // not default to disable default copy, move, assignment, ...
+  ~strided_ref_vector() = default;
 
   template <typename Vector>
   auto operator=(const common_vector_base<Vector>& source) -> strided_ref_vector&

@@ -90,7 +90,7 @@ struct strided_bounded_slice
   constexpr strided_bounded_slice(std::size_t start, bounded_index size,
                                   std::size_t stride) noexcept
     : start{start}
-    , size{std::move(size)}
+    , size{size}
     , stride{stride}
   {
   }
@@ -107,7 +107,7 @@ struct bounded_slice
 
   constexpr bounded_slice(std::size_t start, bounded_index size) noexcept
     : start{start}
-    , size{std::move(size)}
+    , size{size}
   {
   }
 
