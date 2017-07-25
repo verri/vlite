@@ -31,13 +31,13 @@ template <typename T> struct allocator
   }
 
   auto construct(block_type block) const
-    noexcept(noexcept(new (std::declval<void*>()) value_type())) -> void
+    noexcept(std::is_nothrow_constructible_v<value_type>) -> void
   {
     std::uninitialized_value_construct_n(block.data(), block.size());
   }
 
   auto construct(block_type block, const value_type& value) const
-    noexcept(noexcept(new (std::declval<void*>()) value_type(value))) -> void
+    noexcept(std::is_nothrow_copy_constructible_v<value_type>) -> void
   {
     std::uninitialized_fill_n(block.data(), block.size(), value);
   }

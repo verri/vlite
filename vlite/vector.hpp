@@ -29,19 +29,43 @@ public:
   explicit vector(std::size_t size)
     : ref_vector<value_type>{this->allocate(size)}
   {
-    this->construct(this->block_);
+    try
+    {
+      this->construct(this->block_);
+    }
+    catch (...)
+    {
+      this->deallocate(this->block_);
+      throw;
+    }
   }
 
   vector(const value_type& value, std::size_t size)
     : ref_vector<value_type>{this->allocate(size)}
   {
-    this->construct(this->block_, value);
+    try
+    {
+      this->construct(this->block_, value);
+    }
+    catch (...)
+    {
+      this->deallocate(this->block_);
+      throw;
+    }
   }
 
   vector(std::initializer_list<value_type> values)
     : ref_vector<value_type>{this->allocate(values.size())}
   {
-    this->construct(this->block_, values.begin());
+    try
+    {
+      this->construct(this->block_, values.begin());
+    }
+    catch (...)
+    {
+      this->deallocate(this->block_);
+      throw;
+    }
   }
 
   template <typename Vector>
@@ -49,7 +73,15 @@ public:
     : ref_vector<value_type>{this->allocate(other.size())}
   {
     static_assert(std::is_constructible_v<T, const typename Vector::value_type&>);
-    this->construct(this->block_, other.begin());
+    try
+    {
+      this->construct(this->block_, other.begin());
+    }
+    catch (...)
+    {
+      this->deallocate(this->block_);
+      throw;
+    }
   }
 
   template <typename It, typename R = typename std::iterator_traits<It>::reference>
@@ -57,7 +89,15 @@ public:
     : ref_vector<value_type>{this->allocate(std::distance(begin, end))}
   {
     static_assert(std::is_constructible<value_type, R>());
-    this->construct(this->block_, begin, end);
+    try
+    {
+      this->construct(this->block_, begin, end);
+    }
+    catch (...)
+    {
+      this->deallocate(this->block_);
+      throw;
+    }
   }
 
   explicit vector(uninitialized_t, std::size_t size = 0u)
@@ -72,7 +112,7 @@ public:
   {
   }
 
-  ~vector()
+  ~vector() noexcept
   {
     this->destroy(this->block_);
     this->deallocate(this->block_);
@@ -81,7 +121,15 @@ public:
   vector(const vector& source)
     : ref_vector<value_type>{this->allocate(source.size())}
   {
-    this->construct(this->block_, source.data());
+    try
+    {
+      this->construct(this->block_, source.data());
+    }
+    catch (...)
+    {
+      this->deallocate(this->block_);
+      throw;
+    }
   }
 
   auto operator=(const vector& source) -> vector&
@@ -89,7 +137,17 @@ public:
     // no smart size check, it is dangerous.
 
     auto new_block = this->allocate(source.size());
-    this->construct(new_block, source.data());
+
+    try
+    {
+      this->construct(new_block, source.data());
+    }
+    catch (...)
+    {
+      this->deallocate(new_block);
+      throw;
+    }
+
     this->destroy(this->block_);
     this->block_ = new_block;
 

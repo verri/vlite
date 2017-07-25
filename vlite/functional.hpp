@@ -52,14 +52,14 @@ static auto apply(const common_vector_base<VectorA>& lhs,
   auto operator OP__(const common_vector_base<VectorA>& lhs,                             \
                      const common_vector_base<VectorB>& rhs)                             \
   {                                                                                      \
-    return apply(lhs, rhs, (FUNCTOR__){});                                                 \
+    return apply(lhs, rhs, (FUNCTOR__){});                                               \
   }
 
 #define BINARY_RIGHT_TYPE_OPERATION(OP__, FUNCTOR__)                                     \
   template <typename Vector, typename T, typename = meta::fallback<CommonVector<T>>>     \
   auto operator OP__(const common_vector_base<Vector>& lhs, T rhs)                       \
   {                                                                                      \
-    return apply(lhs, [ rhs = std::move(rhs), op = (FUNCTOR__){} ](auto&& value) {         \
+    return apply(lhs, [ rhs = std::move(rhs), op = (FUNCTOR__){} ](auto&& value) {       \
       return op(std::forward<decltype(value)>(value), rhs);                              \
     });                                                                                  \
   }
@@ -68,7 +68,7 @@ static auto apply(const common_vector_base<VectorA>& lhs,
   template <typename T, typename Vector, typename = meta::fallback<CommonVector<T>>>     \
   auto operator OP__(T lhs, const common_vector_base<Vector>& rhs)                       \
   {                                                                                      \
-    return apply(rhs, [ lhs = std::move(lhs), op = (FUNCTOR__){} ](auto&& value) {         \
+    return apply(rhs, [ lhs = std::move(lhs), op = (FUNCTOR__){} ](auto&& value) {       \
       return op(lhs, std::forward<decltype(value)>(value));                              \
     });                                                                                  \
   }
@@ -81,7 +81,7 @@ static auto apply(const common_vector_base<VectorA>& lhs,
   template <typename Vector>                                                             \
   auto operator OP__(const common_vector_base<Vector>& operand)                          \
   {                                                                                      \
-    return apply(operand, (FUNCTOR__){});                                                  \
+    return apply(operand, (FUNCTOR__){});                                                \
   }
 
 OPERATIONS_LIST
