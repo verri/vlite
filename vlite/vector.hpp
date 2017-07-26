@@ -149,6 +149,8 @@ public:
     }
 
     this->destroy(this->block_);
+    this->deallocate(this->block_);
+
     this->block_ = new_block;
 
     return *this;
