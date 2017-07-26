@@ -52,8 +52,6 @@ public:
   {
     static_assert(std::is_assignable<value_type&, U>::value, "incompatible assignment");
     std::fill(begin(), end(), source);
-    for (auto& elem : *this)
-      elem = source;
     return *this;
   }
 
@@ -72,9 +70,17 @@ public:
 
   operator strided_ref_vector<const value_type>() const { return {data(), size(), 1u}; }
 
-  auto operator[](size_type i) -> value_type& { return data()[i]; }
+  auto operator[](size_type i) -> value_type&
+  {
+    assert(i < size());
+    return data()[i];
+  }
 
-  auto operator[](size_type i) const -> const value_type& { return data()[i]; }
+  auto operator[](size_type i) const -> const value_type&
+  {
+    assert(i < size());
+    return data()[i];
+  }
 
   auto operator[](every_index) -> ref_vector<value_type> { return *this; }
 
@@ -82,42 +88,64 @@ public:
 
   auto operator[](slice s) -> ref_vector<value_type>
   {
+    assert(s.start < size());
+    assert(s.start + s.size <= size());
     return {{data() + s.start, s.size}};
   }
 
   auto operator[](slice s) const -> ref_vector<const value_type>
   {
+    assert(s.start < size());
+    assert(s.start + s.size <= size());
     return {{data() + s.start, s.size}};
   }
 
   auto operator[](strided_slice s) -> strided_ref_vector<value_type>
   {
+    assert(s.start < size());
+    assert(s.start + s.stride * s.size <= size());
     return {data() + s.start, s.size, s.stride};
   }
 
   auto operator[](strided_slice s) const -> strided_ref_vector<const value_type>
   {
+    assert(s.start < size());
+    assert(s.start + s.stride * s.size <= size());
     return {data() + s.start, s.size, s.stride};
   }
 
   auto operator[](bounded_slice s) -> ref_vector<value_type>
   {
-    return {{data() + s.start, s.size(size())}};
+    assert(s.start < size());
+    return {{data() + s.start, s.size(size() - s.start)}};
   }
 
   auto operator[](bounded_slice s) const -> ref_vector<const value_type>
   {
-    return {{data() + s.start, s.size(size())}};
+    assert(s.start < size());
+    return {{data() + s.start, s.size(size() - s.start)}};
   }
 
   auto operator[](strided_bounded_slice s) -> strided_ref_vector<value_type>
   {
-    return {data() + s.start, s.size(size()), s.stride};
+    assert(s.start < size());
+
+    auto maximum_size = size() - s.start;
+    maximum_size += maximum_size % s.stride == 0u ? 0u : 1u;
+    maximum_size /= s.stride;
+
+    return {data() + s.start, s.size(maximum_size), s.stride};
   }
 
   auto operator[](strided_bounded_slice s) const -> strided_ref_vector<const value_type>
   {
-    return {data() + s.start, s.size(size()), s.stride};
+    assert(s.start < size());
+
+    auto maximum_size = size() - s.start;
+    maximum_size += maximum_size % s.stride == 0u ? 0u : 1u;
+    maximum_size /= s.stride;
+
+    return {data() + s.start, s.size(maximum_size), s.stride};
   }
 
   auto begin() noexcept -> iterator { return data(); }
